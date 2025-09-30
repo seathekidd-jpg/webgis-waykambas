@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebGIS Wisata Gajah Way Kambas (Pink Theme)</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+
+    <style>
+        /* Mengatur layout utama */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fce4ec; /* Background Light Pink */
+            color: #333;
+        }
+
+        /* Styling Header dan Judul */
+        .header {
+            background-color: #ff80ab; /* Warna Pink Cerah */
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-bottom: 5px solid #d81b60; /* Pink Tua sebagai garis batas */
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 1.8em;
+            letter-spacing: 1px;
+        }
+
+        /* Container utama untuk deskripsi dan peta */
+        .container {
+            display: flex;
+            height: calc(100vh - 87px); /* Tinggi viewport dikurangi tinggi header */
+        }
+
+        /* Sidebar Deskripsi */
+        #sidebar {
+            width: 300px; /* Lebar sidebar */
+            background-color: #f8bbd0; /* Pink yang lebih lembut */
+            padding: 15px;
+            overflow-y: auto;
+            border-right: 3px solid #ff80ab;
+            box-sizing: border-box;
+        }
+
+        #sidebar h2 {
+            color: #d81b60; /* Pink Tua */
+            border-bottom: 2px dashed #ffc1e3;
+            padding-bottom: 5px;
+            margin-top: 0;
+        }
+        
+        #sidebar p {
+            line-height: 1.6;
+            text-align: justify;
+        }
+        
+        /* Area Peta */
+        #map {
+            flex-grow: 1; /* Peta mengisi sisa ruang */
+        }
+
+        /* Styling Pop-up Leaflet (agar berwarna pink) */
+        .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+            background-color: #fff0f5; /* Light Pink/Lavender Blush */
+            color: #333;
+            border-radius: 8px;
+            border: 1px solid #ff80ab; 
+        }
+        
+        .leaflet-container a {
+            color: #d81b60; /* Link color */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🐘 WebGIS Wisata Gajah di Way Kambas, Lampung 🐘</h1>
+    </div>
+
+    <div class="container">
+        <div id="sidebar">
+            <h2>Tentang Taman Nasional Way Kambas </h2>
+            <p>
+                Taman Nasional Way Kambas (TNWK) di Lampung Timur adalah salah satu pusat konservasi gajah Sumatera ($Elephas$ $maximus$ $sumatranus$) tertua di Indonesia. Kawasan seluas 125.000 hektar ini bukan sekadar hutan, melainkan habitat alami dan pusat pelatihan gajah (PKG) yang didirikan sejak tahun 1985.
+            </p>
+            <p>
+                Wisatawan dapat menyaksikan berbagai kegiatan edukasi, seperti mandi gajah, atraksi gajah (seperti sepak bola gajah pada waktu tertentu), dan safari malam untuk melihat satwa liar. TNWK juga merupakan rumah bagi badak Sumatera, harimau Sumatera, dan berbagai jenis burung langka.
+            </p>
+            <p>
+                Kunjungan ke sini membantu mendukung upaya pelestarian satwa langka di Indonesia.
+            </p>
+        </div>
+
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin=""></script>
+
+    <script>
+        // 4.1. Inisialisasi Peta
+        // Koordinat fokus peta: Pusat Pelatihan Gajah (PKG) Way Kambas (perkiraan)
+        var wayKambasLat = -4.845;
+        var wayKambasLng = 105.77; 
+        
+        var map = L.map('map').setView([wayKambasLat, wayKambasLng], 12); // Zoom level 12
+
+        // 4.2. Tambahkan Tile Layer (Basemap) dari OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        // 4.3. Icon Kustom Berwarna Pink
+        var pinkIcon = new L.Icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-pink.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+        
+        // 4.4. Tambahkan Marker dan Pop-up dengan Icon Pink
+        L.marker([wayKambasLat, wayKambasLng], {icon: pinkIcon})
+            .addTo(map)
+            .bindPopup("<b>Lokasi Way Kambas: Pusat Gajah Lampung</b><br>Taman Nasional Way Kambas.")
+            .openPopup();
+            
+        // 4.5. Tambahkan lokasi lain (contoh: Rumah Sakit Gajah - perkiraan)
+        var RSGajahLat = -4.84;
+        var RSGajahLng = 105.78;
+        
+        L.marker([RSGajahLat, RSGajahLng], {icon: pinkIcon})
+            .addTo(map)
+            .bindPopup("<b>Rumah Sakit Gajah</b><br>Fasilitas perawatan gajah di TNWK.");
+    </script>
+</body>
+</html>
